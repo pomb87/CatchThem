@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/menu"
+    tools:context="MenuActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="573dp"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/buttonPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/start" />
+
+        <ImageButton
+            android:id="@+id/buttonScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/highscore" />
+
+        <ImageButton
+            android:id="@+id/buttonEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/end" />
+
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
