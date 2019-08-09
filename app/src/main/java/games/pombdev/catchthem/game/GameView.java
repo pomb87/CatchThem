@@ -4,16 +4,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.Random;
+import java.util.logging.Logger;
+
+import games.pombdev.catchthem.R;
 
 public class GameView extends SurfaceView implements Runnable {
 
@@ -22,6 +27,7 @@ public class GameView extends SurfaceView implements Runnable {
     int screenX;
     int screenY;
     private Player player;
+    private Collision collision;
     private Paint paint;
     private Canvas canvas;
     private SurfaceHolder surfaceHolder;
@@ -29,15 +35,14 @@ public class GameView extends SurfaceView implements Runnable {
     private FallingObject fallenObjects;
     //base speed for level 1
     int baseSpeed = 15;
-
     //speed factor
     int speedfactor = 5;
-
     //current level
     int level;
-
-    boolean flag;
     int playerAngle = 0;
+    int score = 0;
+    private boolean drawGood;
+    private boolean drawBad;
 
     //context to be used in onTouchEvent to cause the activity transition from GameAvtivity to MainActivity.
     Context context;
@@ -49,6 +54,7 @@ public class GameView extends SurfaceView implements Runnable {
         fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor*level), generateRandomNumber());
         surfaceHolder = getHolder();
         paint = new Paint();
+        collision = new Collision();
 
         this.screenX = screenX;
         this.screenY = screenY;
@@ -73,7 +79,7 @@ public class GameView extends SurfaceView implements Runnable {
             paint.setColor(Color.WHITE);
             //drawing the score on the game screen
             paint.setTextSize(50);
-            canvas.drawText("Score:", this.screenX - 150, 50, paint);
+            canvas.drawText("Score:" + score, this.screenX - 250, 50, paint);
 
             canvas.drawBitmap(
                     player.getBitmap(),
@@ -85,6 +91,13 @@ public class GameView extends SurfaceView implements Runnable {
                     fallenObjects.getX(),
                     fallenObjects.getY(),
                     paint);
+            if (drawBad || drawGood) {
+                canvas.drawBitmap(
+                        collision.getBitmap(),
+                        collision.getX(),
+                        collision.getY(),
+                        paint);
+            }
             surfaceHolder.unlockCanvasAndPost(canvas);
 
         }
@@ -92,30 +105,39 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
-        if (fallenObjects.getX() >= screenX) {
-            flag = true;
+        if (drawGood || drawBad) {
+            try {
+                gameThread.sleep(200);
+            } catch (Exception e) {
+                Log.getStackTraceString(e);
+            }
         }
+        drawBad = false;
+        drawGood = false;
         player.update();
-        if (Rect.intersects(player.getDetectCollision(), fallenObjects.getDetectCollision()) && playerAngle == fallenObjects.getAngleFallenObject()) {
-            //check player rotation with color of fallenObject
-
-            //incrementing score as time passes
-            //score++;
-
-            //reset fallen object
-            fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor*level), generateRandomNumber());
-
-
-        }
-        if (flag) {
-
-            fallenObjects.setX(screenX);
-            fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor*level), generateRandomNumber());
-                    //setting the flag false so that the else part is executed only when new enemy enters the screen
-            flag = false;
+        if (Rect.intersects(player.getDetectCollision(), fallenObjects.getDetectCollision())) {
+            if (playerAngle == fallenObjects.getAngleFallenObject()) {
+                //incrementing score as time passes
+                score++;
+                drawGood = true;
+                mapCollision(fallenObjects.getX(), fallenObjects.getY(), true);
+            } else {
+                drawBad = true;
+                mapCollision(fallenObjects.getX(), fallenObjects.getY(), false);
+            }
+           fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor*level), generateRandomNumber());
         }
         fallenObjects.update();
+    }
 
+    private void mapCollision(int x, int y, boolean good) {
+        if (good) {
+            collision.setBitmap(Bitmap.createScaledBitmap(rotateBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.good), 270), 100,100, false));
+        } else {
+            collision.setBitmap(Bitmap.createScaledBitmap(rotateBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.bad), 270), 100,100, false));
+        }
+      collision.setX(fallenObjects.getX()-50);
+        collision.setY(fallenObjects.getY());
     }
 
     private void control() {
