@@ -13,6 +13,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.Random;
+
 public class GameView extends SurfaceView implements Runnable {
 
     volatile boolean playing;
@@ -23,6 +25,19 @@ public class GameView extends SurfaceView implements Runnable {
     private Paint paint;
     private Canvas canvas;
     private SurfaceHolder surfaceHolder;
+    //the falling objects
+    private FallingObject fallenObjects;
+    //base speed for level 1
+    int baseSpeed = 15;
+
+    //speed factor
+    int speedfactor = 5;
+
+    //current level
+    int level;
+
+    boolean flag;
+    int playerAngle = 0;
 
     //context to be used in onTouchEvent to cause the activity transition from GameAvtivity to MainActivity.
     Context context;
@@ -30,6 +45,8 @@ public class GameView extends SurfaceView implements Runnable {
     public GameView(Context context, int screenX, int screenY) {
         super(context);
         player = new Player(context, screenX, screenY);
+        //single enemy initialization
+        fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor*level), generateRandomNumber());
         surfaceHolder = getHolder();
         paint = new Paint();
 
@@ -63,6 +80,11 @@ public class GameView extends SurfaceView implements Runnable {
                     player.getX(),
                     player.getY(),
                     paint);
+            canvas.drawBitmap(
+                    fallenObjects.getBitmap(),
+                    fallenObjects.getX(),
+                    fallenObjects.getY(),
+                    paint);
             surfaceHolder.unlockCanvasAndPost(canvas);
 
         }
@@ -70,7 +92,30 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
+        if (fallenObjects.getX() >= screenX) {
+            flag = true;
+        }
         player.update();
+        if (Rect.intersects(player.getDetectCollision(), fallenObjects.getDetectCollision()) && playerAngle == fallenObjects.getAngleFallenObject()) {
+            //check player rotation with color of fallenObject
+
+            //incrementing score as time passes
+            //score++;
+
+            //reset fallen object
+            fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor*level), generateRandomNumber());
+
+
+        }
+        if (flag) {
+
+            fallenObjects.setX(screenX);
+            fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor*level), generateRandomNumber());
+                    //setting the flag false so that the else part is executed only when new enemy enters the screen
+            flag = false;
+        }
+        fallenObjects.update();
+
     }
 
     private void control() {
@@ -106,6 +151,7 @@ public class GameView extends SurfaceView implements Runnable {
             case MotionEvent.ACTION_DOWN:
             //rotate player
                 player.setBitmap(rotateBitmap(player.getBitmap(), 90));
+                updatePlayerAngle(90);
             break;
 
             case MotionEvent.ACTION_UP:
@@ -122,5 +168,17 @@ public class GameView extends SurfaceView implements Runnable {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
+    private void updatePlayerAngle(int angle) {
+        playerAngle = playerAngle + angle;
+        if (playerAngle == 360) {
+            playerAngle = 0;
+        }
+    }
+
+    private int generateRandomNumber() {
+        Random random = new Random();
+        return random.nextInt(4) + 1;
     }
 }
