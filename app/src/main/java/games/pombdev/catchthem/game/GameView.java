@@ -43,6 +43,9 @@ public class GameView extends SurfaceView implements Runnable {
     int score = 0;
     private boolean drawGood;
     private boolean drawBad;
+    int lives;
+    boolean isGameOver;
+    Bitmap bitmapHeart;
 
     //context to be used in onTouchEvent to cause the activity transition from GameAvtivity to MainActivity.
     Context context;
@@ -58,9 +61,12 @@ public class GameView extends SurfaceView implements Runnable {
 
         this.screenX = screenX;
         this.screenY = screenY;
+        lives = 3;
+        isGameOver = false;
 
         //initializing context
         this.context = context;
+        bitmapHeart = Bitmap.createScaledBitmap(rotateBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.heart), 270), 100,100, false);
     }
 
     @Override
@@ -77,32 +83,19 @@ public class GameView extends SurfaceView implements Runnable {
             canvas = surfaceHolder.lockCanvas();
             canvas.drawColor(Color.BLACK);
             paint.setColor(Color.WHITE);
-            //drawing the score on the game screen
-            paint.setTextSize(50);
-            canvas.drawText("Score:" + score, this.screenX - 250, 50, paint);
-
-            canvas.drawBitmap(
-                    player.getBitmap(),
-                    player.getX(),
-                    player.getY(),
-                    paint);
-            canvas.drawBitmap(
-                    fallenObjects.getBitmap(),
-                    fallenObjects.getX(),
-                    fallenObjects.getY(),
-                    paint);
-            if (drawBad || drawGood) {
-                canvas.drawBitmap(
-                        collision.getBitmap(),
-                        collision.getX(),
-                        collision.getY(),
-                        paint);
+            if (isGameOver) {
+                GameViewHelper.paintGameover(canvas, paint, score);
+            } else {
+                GameViewHelper.paintScore(canvas, paint, score, this.screenX);
+                GameViewHelper.paintPlayerAndFallenObj(canvas, player, fallenObjects, paint);
+                GameViewHelper.paintCollision(canvas, drawGood || drawBad, collision, paint);
+                GameViewHelper.paintHearts(canvas, lives, paint, bitmapHeart, this.screenX, this.screenY);
             }
             surfaceHolder.unlockCanvasAndPost(canvas);
-
         }
-
     }
+
+
 
     private void update() {
         if (drawGood || drawBad) {
@@ -115,19 +108,25 @@ public class GameView extends SurfaceView implements Runnable {
         drawBad = false;
         drawGood = false;
         player.update();
-        if (Rect.intersects(player.getDetectCollision(), fallenObjects.getDetectCollision())) {
-            if (playerAngle == fallenObjects.getAngleFallenObject()) {
-                //incrementing score as time passes
-                score++;
-                drawGood = true;
-                mapCollision(fallenObjects.getX(), fallenObjects.getY(), true);
-            } else {
-                drawBad = true;
-                mapCollision(fallenObjects.getX(), fallenObjects.getY(), false);
+        if (!isGameOver) {
+            if (Rect.intersects(player.getDetectCollision(), fallenObjects.getDetectCollision())) {
+                if (playerAngle == fallenObjects.getAngleFallenObject()) {
+                    //incrementing score as time passes
+                    score++;
+                    drawGood = true;
+                    mapCollision(fallenObjects.getX(), fallenObjects.getY(), true);
+                } else {
+                    drawBad = true;
+                    mapCollision(fallenObjects.getX(), fallenObjects.getY(), false);
+                    lives = lives - 1;
+                    if (lives < 1) {
+                        isGameOver = true;
+                    }
+                }
+                fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor * level), generateRandomNumber());
             }
-           fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor*level), generateRandomNumber());
+            fallenObjects.update();
         }
-        fallenObjects.update();
     }
 
     private void mapCollision(int x, int y, boolean good) {
