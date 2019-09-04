@@ -46,6 +46,7 @@ public class GameView extends SurfaceView implements Runnable {
     int lives;
     boolean isGameOver;
     Bitmap bitmapHeart;
+    private boolean isGameStart;
 
     //context to be used in onTouchEvent to cause the activity transition from GameAvtivity to MainActivity.
     Context context;
@@ -63,10 +64,11 @@ public class GameView extends SurfaceView implements Runnable {
         this.screenY = screenY;
         lives = 3;
         isGameOver = false;
+        isGameStart = true;
 
         //initializing context
         this.context = context;
-        bitmapHeart = Bitmap.createScaledBitmap(rotateBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.heart), 270), 100,100, false);
+        bitmapHeart = Bitmap.createScaledBitmap(rotateBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.heart), 0), 100,100, false);
     }
 
     @Override
@@ -85,6 +87,9 @@ public class GameView extends SurfaceView implements Runnable {
             paint.setColor(Color.WHITE);
             if (isGameOver) {
                 GameViewHelper.paintGameover(canvas, paint, score);
+            }
+            else if (isGameStart) {
+                GameViewHelper.paintGameStartMessage(canvas, paint, score);
             } else {
                 GameViewHelper.paintScore(canvas, paint, score, this.screenX);
                 GameViewHelper.paintPlayerAndFallenObj(canvas, player, fallenObjects, paint);
@@ -108,7 +113,7 @@ public class GameView extends SurfaceView implements Runnable {
         drawBad = false;
         drawGood = false;
         player.update();
-        if (!isGameOver) {
+        if (!isGameOver && !isGameStart) {
             if (Rect.intersects(player.getDetectCollision(), fallenObjects.getDetectCollision())) {
                 if (playerAngle == fallenObjects.getAngleFallenObject()) {
                     //incrementing score as time passes
@@ -131,12 +136,12 @@ public class GameView extends SurfaceView implements Runnable {
 
     private void mapCollision(int x, int y, boolean good) {
         if (good) {
-            collision.setBitmap(Bitmap.createScaledBitmap(rotateBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.good), 270), 100,100, false));
+            collision.setBitmap(Bitmap.createScaledBitmap(rotateBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.good), 0), 100,100, false));
         } else {
-            collision.setBitmap(Bitmap.createScaledBitmap(rotateBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.bad), 270), 100,100, false));
+            collision.setBitmap(Bitmap.createScaledBitmap(rotateBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.bad), 0), 100,100, false));
         }
-      collision.setX(fallenObjects.getX()-50);
-        collision.setY(fallenObjects.getY());
+        collision.setX(fallenObjects.getX());
+        collision.setY(fallenObjects.getY() - 50);
     }
 
     private void control() {
@@ -173,6 +178,9 @@ public class GameView extends SurfaceView implements Runnable {
             //rotate player
                 player.setBitmap(rotateBitmap(player.getBitmap(), 90));
                 updatePlayerAngle(90);
+                if (isGameStart) {
+                    isGameStart = false;
+                }
             break;
 
             case MotionEvent.ACTION_UP:

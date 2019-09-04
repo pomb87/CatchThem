@@ -10,8 +10,8 @@ public class GameViewHelper {
         for (int i = 0; i < lives; i++) {
             canvas.drawBitmap(
                     bitmap,
-                    (screenX / 2) - (i*100),
-                    (screenY / 2) + 300,
+                    (screenX / 2) + 300,
+                    (screenY / 2) - (i*100),
                     paint);
         }
     }
@@ -50,5 +50,12 @@ public class GameViewHelper {
         paint.setTextAlign(Paint.Align.CENTER);
         int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
         canvas.drawText("Game Over", canvas.getWidth() / 2, yPos, paint);
+    }
+
+    public static void paintGameStartMessage(Canvas canvas, Paint paint, int score) {
+        paint.setTextSize(50);
+        paint.setTextAlign(Paint.Align.CENTER);
+        int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
+        canvas.drawText("Align the colour of the edge with the falling block", canvas.getWidth() / 2, yPos, paint);
     }
 }

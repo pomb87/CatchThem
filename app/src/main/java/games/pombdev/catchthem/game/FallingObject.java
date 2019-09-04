@@ -31,26 +31,26 @@ public class FallingObject {
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_blue);
         switch (random) {
             case 1:
-                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_yellow);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_blue);
                 this.angleFallenObject = 0;
                 break;
 
             case 2:
-                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_green);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_yellow);
                 this.angleFallenObject = 90;
                 break;
 
             case 3:
-                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_red);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_green);
                 this.angleFallenObject = 180;
                 break;
 
             case 4:
-                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_blue);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_red);
                 this.angleFallenObject = 270;
                 break;
             default:
-                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_blue);
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_red);
                 break;
         }
         bitmap = Bitmap.createScaledBitmap(bitmap, 100,100, false);
@@ -61,11 +61,12 @@ public class FallingObject {
         minY = 0;
         Random generator = new Random();
         this.speed = generator.nextInt(6) + lvlSpeed;
-        x = 0;
-        y = (screenY - bitmap.getHeight()) / 2;
+        x = (screenX - bitmap.getHeight()) / 2;
+        y = 0;
+        //y = (screenY - bitmap.getHeight()) / 2;
 
-        if (x <= minX + bitmap.getWidth()) {
-            x = minX + bitmap.getWidth();
+        if (y <= minY + bitmap.getHeight()) {
+            y = minY + bitmap.getHeight();
         }
 
         //initializing rect object
@@ -74,14 +75,15 @@ public class FallingObject {
 
     public void update() {
 
-        x += speed ;
+        y += speed ;
 
-        if (x < minX) {
-            x = minX;
+        if (y < minY) {
+            y = minY;
         }
-        if (x > maxX) {
-            x = maxX;
+        if (y > maxY) {
+            y = maxY;
         }
+
         //Adding the top, left, bottom and right to the rect object
         detectCollision.left = x;
         detectCollision.top = y;
