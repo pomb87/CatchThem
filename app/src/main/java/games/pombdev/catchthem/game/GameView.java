@@ -47,6 +47,9 @@ public class GameView extends SurfaceView implements Runnable {
     boolean isGameOver;
     Bitmap bitmapHeart;
     private boolean isGameStart;
+    private boolean reverse;
+    private int speedLimit = 5;
+    private int reverseLimit = 10;
 
     //context to be used in onTouchEvent to cause the activity transition from GameAvtivity to MainActivity.
     Context context;
@@ -55,7 +58,8 @@ public class GameView extends SurfaceView implements Runnable {
         super(context);
         player = new Player(context, screenX, screenY);
         //single enemy initialization
-        fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor*level), generateRandomNumber());
+        reverse = false;
+        fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor*level), generateRandomNumber(), reverse);
         surfaceHolder = getHolder();
         paint = new Paint();
         collision = new Collision();
@@ -115,11 +119,21 @@ public class GameView extends SurfaceView implements Runnable {
         player.update();
         if (!isGameOver && !isGameStart) {
             if (Rect.intersects(player.getDetectCollision(), fallenObjects.getDetectCollision())) {
-                if (playerAngle == fallenObjects.getAngleFallenObject()) {
+                if ((playerAngle == fallenObjects.getAngleFallenObject() && !reverse)
+                        || playerAngle == fallenObjects.getAngleFallenObjectReverse() && reverse) {
                     //incrementing score as time passes
                     score++;
                     drawGood = true;
                     mapCollision(fallenObjects.getX(), fallenObjects.getY(), true);
+                    if (score % 5 == 0 && level < speedLimit) {
+                        level++;
+                    }
+                    if (score % 15 == 0 && lives < 3) {
+                        lives++;
+                    }
+                    if (score > reverseLimit) {
+                        reverse = generateRandomNumber() % 2 == 0;
+                    }
                 } else {
                     drawBad = true;
                     mapCollision(fallenObjects.getX(), fallenObjects.getY(), false);
@@ -128,9 +142,9 @@ public class GameView extends SurfaceView implements Runnable {
                         isGameOver = true;
                     }
                 }
-                fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor * level), generateRandomNumber());
+                fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor * level), generateRandomNumber(), reverse);
             }
-            fallenObjects.update();
+            fallenObjects.update(reverse);
         }
     }
 
@@ -141,7 +155,11 @@ public class GameView extends SurfaceView implements Runnable {
             collision.setBitmap(Bitmap.createScaledBitmap(rotateBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.bad), 0), 100,100, false));
         }
         collision.setX(fallenObjects.getX());
-        collision.setY(fallenObjects.getY() - 50);
+        if (reverse) {
+            collision.setY(fallenObjects.getY() + 50);
+        } else {
+            collision.setY(fallenObjects.getY() - 50);
+        }
     }
 
     private void control() {

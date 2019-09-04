@@ -22,32 +22,37 @@ public class FallingObject {
     private int maxY;
     private int minY;
     private int angleFallenObject = 0;
+    private int angleFallenObjectReverse = 0;
 
     //creating a rect object for a friendly ship
     private Rect detectCollision;
 
 
-    public FallingObject(Context context, int screenX, int screenY, int level, int lvlSpeed, int random) {
+    public FallingObject(Context context, int screenX, int screenY, int level, int lvlSpeed, int random, boolean reverse) {
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_blue);
         switch (random) {
             case 1:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_blue);
                 this.angleFallenObject = 0;
+                this.angleFallenObjectReverse = 180;
                 break;
 
             case 2:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_yellow);
                 this.angleFallenObject = 90;
+                this.angleFallenObjectReverse = 270;
                 break;
 
             case 3:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_green);
                 this.angleFallenObject = 180;
+                this.angleFallenObjectReverse = 0;
                 break;
 
             case 4:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_red);
                 this.angleFallenObject = 270;
+                this.angleFallenObjectReverse = 90;
                 break;
             default:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.fo_red);
@@ -62,8 +67,11 @@ public class FallingObject {
         Random generator = new Random();
         this.speed = generator.nextInt(6) + lvlSpeed;
         x = (screenX - bitmap.getHeight()) / 2;
-        y = 0;
-        //y = (screenY - bitmap.getHeight()) / 2;
+        if (reverse) {
+            y = screenY;
+        } else {
+            y = 0;
+        }
 
         if (y <= minY + bitmap.getHeight()) {
             y = minY + bitmap.getHeight();
@@ -73,17 +81,8 @@ public class FallingObject {
         detectCollision = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
     }
 
-    public void update() {
-
-        y += speed ;
-
-        if (y < minY) {
-            y = minY;
-        }
-        if (y > maxY) {
-            y = maxY;
-        }
-
+    public void update(boolean reverse) {
+        setSpeedY(reverse);
         //Adding the top, left, bottom and right to the rect object
         detectCollision.left = x;
         detectCollision.top = y;
@@ -91,9 +90,22 @@ public class FallingObject {
         detectCollision.bottom = y + bitmap.getHeight();
     }
 
+    private void setSpeedY(boolean reverse) {
+        if (reverse) {
+            y -= speed ;
+        } else {
+            y += speed ;
+        }
 
+        if (y < minY) {
+            y = minY;
+        }
+        if (y > maxY) {
+            y = maxY;
+        }
+    }
 
-    //one more getter for getting the rect object
+   //one more getter for getting the rect object
     public Rect getDetectCollision() {
         return detectCollision;
     }
@@ -121,6 +133,10 @@ public class FallingObject {
 
     public int getAngleFallenObject() {
         return angleFallenObject;
+    }
+
+    public int getAngleFallenObjectReverse() {
+        return angleFallenObjectReverse;
     }
 }
 
