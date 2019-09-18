@@ -15,6 +15,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.google.android.gms.ads.InterstitialAd;
+
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -56,11 +58,12 @@ public class GameView extends SurfaceView implements Runnable {
     int highScore[] = new int[10];
     //Shared Prefernces to store the High Scores
     SharedPreferences sharedPreferences;
+    InterstitialAd mInterstitialAd;
 
     //context to be used in onTouchEvent to cause the activity transition from GameAvtivity to MainActivity.
     Context context;
 
-    public GameView(Context context, int screenX, int screenY) {
+    public GameView(Context context, int screenX, int screenY, InterstitialAd mInterstitialAd) {
         super(context);
         player = new Player(context, screenX, screenY);
         //single enemy initialization
@@ -75,6 +78,7 @@ public class GameView extends SurfaceView implements Runnable {
         lives = 3;
         isGameOver = false;
         isGameStart = true;
+        this.mInterstitialAd = mInterstitialAd;
 
         sharedPreferences = context.getSharedPreferences("SHAR_PREF_NAME", Context.MODE_PRIVATE);
 
@@ -230,6 +234,13 @@ public class GameView extends SurfaceView implements Runnable {
             case MotionEvent.ACTION_DOWN:
 
                 if(isGameOver){
+
+                    if (mInterstitialAd.isLoaded()) {
+                        mInterstitialAd.show();
+                    } else {
+                        Log.d("AD LOAD ERROR", "AD not yet loaded");
+                    }
+
                     if(eventaction==MotionEvent.ACTION_DOWN){
                         context.startActivity(new Intent(context, MenuActivity.class));
                     }

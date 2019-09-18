@@ -7,8 +7,14 @@ import android.content.pm.ActivityInfo;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
 
 public class MenuActivity extends Activity implements View.OnClickListener {
 
@@ -17,6 +23,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
 
     //end button
     private ImageButton buttonEnd;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +40,24 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         buttonPlay.setOnClickListener(this);
         //setting the on click listener to end now button
         buttonEnd.setOnClickListener(this);
+
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544/1033173712");
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
     }
 
     // the onclick methods
     @Override
     public void onClick(View v) {
+
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d("AD LOAD ERROR", "AD not yet loaded");
+        }
 
         if (v == buttonPlay) {
             //the transition from MainActivity to GameActivity

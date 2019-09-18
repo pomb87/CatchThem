@@ -10,12 +10,18 @@ import android.view.Display;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+
 import games.pombdev.catchthem.game.GameView;
 
 public class GameActivity extends AppCompatActivity {
 
     //declaring gameview
     private GameView gameView;
+
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +33,26 @@ public class GameActivity extends AppCompatActivity {
         Point size = new Point();
         display.getSize(size);
 
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544/1033173712");
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        boolean adRequest = new AdRequest.Builder()
+                .addTestDevice("833D1B561FFDE098DADF90348C419AAB")
+                .build().isTestDevice(this);
+        mInterstitialAd.loadAd(new AdRequest.Builder()
+                .addTestDevice("833D1B561FFDE098DADF90348C419AAB")
+                .build());
+        //mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        //mInterstitialAd.loadAd(new AdRequest.Builder.addTestDevice("833D1B561FFDE098DADF90348C419AAB"));
+
+
         RelativeLayout layout = new RelativeLayout(this);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.MATCH_PARENT);
 
-        gameView = new GameView(this, size.x, size.y);
+        gameView = new GameView(this, size.x, size.y, mInterstitialAd);
         layout.addView(gameView);
 
         //adding it to contentview
