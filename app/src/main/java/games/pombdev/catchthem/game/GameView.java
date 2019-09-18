@@ -18,6 +18,7 @@ import android.view.SurfaceView;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import games.pombdev.catchthem.MenuActivity;
 import games.pombdev.catchthem.R;
 
 public class GameView extends SurfaceView implements Runnable {
@@ -41,6 +42,7 @@ public class GameView extends SurfaceView implements Runnable {
     int level;
     int playerAngle = 0;
     int score = 0;
+    int highScore1 = 0;
     private boolean drawGood;
     private boolean drawBad;
     int lives;
@@ -50,6 +52,10 @@ public class GameView extends SurfaceView implements Runnable {
     private boolean reverse;
     private int speedLimit = 5;
     private int reverseLimit = 10;
+    //the high Scores Holder
+    int highScore[] = new int[10];
+    //Shared Prefernces to store the High Scores
+    SharedPreferences sharedPreferences;
 
     //context to be used in onTouchEvent to cause the activity transition from GameAvtivity to MainActivity.
     Context context;
@@ -69,6 +75,22 @@ public class GameView extends SurfaceView implements Runnable {
         lives = 3;
         isGameOver = false;
         isGameStart = true;
+
+        sharedPreferences = context.getSharedPreferences("SHAR_PREF_NAME", Context.MODE_PRIVATE);
+
+        //initializing the array high scores with the previous values
+        highScore[0] = sharedPreferences.getInt("score1", 0);
+        highScore[1] = sharedPreferences.getInt("score2", 0);
+        highScore[2] = sharedPreferences.getInt("score3", 0);
+        highScore[3] = sharedPreferences.getInt("score4", 0);
+        highScore[4] = sharedPreferences.getInt("score5", 0);
+        highScore[5] = sharedPreferences.getInt("score6", 0);
+        highScore[6] = sharedPreferences.getInt("score7", 0);
+        highScore[7] = sharedPreferences.getInt("score8", 0);
+        highScore[8] = sharedPreferences.getInt("score9", 0);
+        highScore[9] = sharedPreferences.getInt("score10", 0);
+
+        highScore1 = highScore[0];
 
         //initializing context
         this.context = context;
@@ -96,6 +118,7 @@ public class GameView extends SurfaceView implements Runnable {
                 GameViewHelper.paintGameStartMessage(canvas, paint, score);
             } else {
                 GameViewHelper.paintScore(canvas, paint, score, this.screenX);
+                GameViewHelper.paintHighScore(canvas, paint, highScore1, this.screenX);
                 GameViewHelper.paintPlayerAndFallenObj(canvas, player, fallenObjects, paint);
                 GameViewHelper.paintCollision(canvas, drawGood || drawBad, collision, paint);
                 GameViewHelper.paintHearts(canvas, lives, paint, bitmapHeart, this.screenX, this.screenY);
@@ -140,6 +163,18 @@ public class GameView extends SurfaceView implements Runnable {
                     lives = lives - 1;
                     if (lives < 1) {
                         isGameOver = true;
+                        //set the highscore to the correct places
+                        assignHighscore();
+
+                        //storing the scores through shared Preferences
+                        SharedPreferences.Editor e = sharedPreferences.edit();
+
+                        for (int i = 0; i < 10; i++) {
+
+                            int j = i + 1;
+                            e.putInt("score" + j, highScore[i]);
+                        }
+                        e.apply();
                     }
                 }
                 fallenObjects = new FallingObject(context, screenX, screenY, level, baseSpeed + (speedfactor * level), generateRandomNumber(), reverse);
@@ -193,6 +228,12 @@ public class GameView extends SurfaceView implements Runnable {
         switch (eventaction) {
 
             case MotionEvent.ACTION_DOWN:
+
+                if(isGameOver){
+                    if(eventaction==MotionEvent.ACTION_DOWN){
+                        context.startActivity(new Intent(context, MenuActivity.class));
+                    }
+                }
             //rotate player
                 player.setBitmap(rotateBitmap(player.getBitmap(), 90));
                 updatePlayerAngle(90);
@@ -227,5 +268,85 @@ public class GameView extends SurfaceView implements Runnable {
     private int generateRandomNumber() {
         Random random = new Random();
         return random.nextInt(4) + 1;
+    }
+
+    private void assignHighscore() {
+        //Assigning the scores to the highscore integer array
+        for (int i = 0; i < 10; i++) {
+            if (highScore[i] < score) {
+
+                //Assign the scores to their correct places
+                switch (i) {
+                    case 0:
+                        highScore[9] = highScore[8];
+                        highScore[8] = highScore[7];
+                        highScore[7] = highScore[6];
+                        highScore[6] = highScore[5];
+                        highScore[5] = highScore[4];
+                        highScore[4] = highScore[3];
+                        highScore[3] = highScore[2];
+                        highScore[2] = highScore[1];
+                        highScore[1] = highScore[0];
+                        break;
+                    case 1:
+                        highScore[9] = highScore[8];
+                        highScore[8] = highScore[7];
+                        highScore[7] = highScore[6];
+                        highScore[6] = highScore[5];
+                        highScore[5] = highScore[4];
+                        highScore[4] = highScore[3];
+                        highScore[3] = highScore[2];
+                        highScore[2] = highScore[1];
+                        break;
+                    case 2:
+                        highScore[9] = highScore[8];
+                        highScore[8] = highScore[7];
+                        highScore[7] = highScore[6];
+                        highScore[6] = highScore[5];
+                        highScore[5] = highScore[4];
+                        highScore[4] = highScore[3];
+                        highScore[3] = highScore[2];
+                        break;
+                    case 3:
+                        highScore[9] = highScore[8];
+                        highScore[8] = highScore[7];
+                        highScore[7] = highScore[6];
+                        highScore[6] = highScore[5];
+                        highScore[5] = highScore[4];
+                        highScore[4] = highScore[3];
+                        break;
+                    case 4:
+                        highScore[9] = highScore[8];
+                        highScore[8] = highScore[7];
+                        highScore[7] = highScore[6];
+                        highScore[6] = highScore[5];
+                        highScore[5] = highScore[4];
+                        break;
+                    case 5:
+                        highScore[9] = highScore[8];
+                        highScore[8] = highScore[7];
+                        highScore[7] = highScore[6];
+                        highScore[6] = highScore[5];
+                        break;
+                    case 6:
+                        highScore[9] = highScore[8];
+                        highScore[8] = highScore[7];
+                        highScore[7] = highScore[6];
+                        break;
+                    case 7:
+                        highScore[9] = highScore[8];
+                        highScore[8] = highScore[7];
+                        break;
+                    case 8:
+                        highScore[9] = highScore[8];
+                        break;
+                    default:
+                        break;
+                }
+
+                highScore[i] = score;
+                break;
+            }
+        }
     }
 }

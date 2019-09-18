@@ -45,6 +45,12 @@ public class GameViewHelper {
         canvas.drawText("Score:" + score, screenX - 250, 50, paint);
     }
 
+    public static void paintHighScore(Canvas canvas, Paint paint, int score, int screenX) {
+        //drawing the score on the game screen
+        paint.setTextSize(50);
+        canvas.drawText("HighScore:" + score, screenX - 800, 50, paint);
+    }
+
     public static void paintGameover(Canvas canvas, Paint paint, int score) {
         paint.setTextSize(130);
         paint.setTextAlign(Paint.Align.CENTER);
