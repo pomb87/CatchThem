@@ -4,44 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/menu"
+    android:background="@drawable/menublack"
     tools:context="MenuActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="573dp"
         android:orientation="vertical"
-        android:paddingTop="20dp"
+        android:paddingTop="160dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
             android:id="@+id/buttonPlay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="291dp"
+            android:layout_height="284dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/start" />
-
-        <ImageButton
-            android:id="@+id/buttonScore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/highscore" />
+            android:scaleX="0.8"
+            android:scaleY="1"
+            android:src="@drawable/start4" />
 
         <ImageButton
             android:id="@+id/buttonEnd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="181dp"
+            android:layout_height="84dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/end" />
+            android:src="@drawable/end6" />
 
 
     </LinearLayout>

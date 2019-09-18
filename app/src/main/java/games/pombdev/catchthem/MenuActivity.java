@@ -14,8 +14,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
 
     // play button
     private ImageButton buttonPlay;
-    //high score button
-    private ImageButton buttonScore;
+
     //end button
     private ImageButton buttonEnd;
 
@@ -24,20 +23,12 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        //setting the orientation to landscape
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
         //getting the button
         buttonPlay = findViewById(R.id.buttonPlay);
 
-        //initializing the highscore button
-        buttonScore = findViewById(R.id.buttonScore);
-
-        //initializing the end button
+       //initializing the end button
         buttonEnd = findViewById(R.id.buttonEnd);
 
-        //setting the on click listener to high score button
-        buttonScore.setOnClickListener(this);
         //setting the on click listener to play now button
         buttonPlay.setOnClickListener(this);
         //setting the on click listener to end now button
@@ -52,10 +43,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
             //the transition from MainActivity to GameActivity
             startActivity(new Intent(MenuActivity.this, GameActivity.class));
         }
-        if (v == buttonScore) {
-            //the transition from MainActivity to HighScore activity
-            startActivity(new Intent(MenuActivity.this, HighscoreActivity.class));
-        }
+
         if (v == buttonEnd) {
             //finish all activities and exit app
             //finishAndRemoveTask();

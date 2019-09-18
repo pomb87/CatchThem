@@ -56,6 +56,7 @@ public class GameViewHelper {
         paint.setTextSize(50);
         paint.setTextAlign(Paint.Align.CENTER);
         int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
-        canvas.drawText("Align the colour of the edge with the falling block", canvas.getWidth() / 2, yPos, paint);
+        canvas.drawText("Align the colour of the edge", canvas.getWidth() / 2, yPos, paint);
+        canvas.drawText("with the falling blocks", canvas.getWidth() / 2, yPos+70, paint);
     }
 }
